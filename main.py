@@ -23,6 +23,10 @@ tasks=[
 class TaskCreate(BaseModel):
     title:str = Field(...,min_length=1)
 
+class UpdateTask(BaseModel):
+    title:str =Field(...,min_length=1)
+    done:bool
+
 @app.get('/')
 def home():
     return {
@@ -59,3 +63,27 @@ def create_task(task : TaskCreate):
     }
     tasks.append(new_task)
     return new_task
+
+@app.put('/tasks/{id}')
+def update_tasks(id: int ,  update_task :UpdateTask):
+    for t in tasks:
+        if t["id"]==id:
+            t["title"] = update_task.title
+            t["done"] = update_task.done
+            return t
+    raise HTTPException(
+        status_code=404,
+        detail="not found"
+    )
+
+@app.delete("/tasks/{id}", status_code=204)
+def delete_task(id: int):
+    for t in tasks:
+        if t["id"]==id:
+            tasks.remove(t)
+            return None
+    raise HTTPException(
+        status_code=404,
+        detail="not found"
+    )
+

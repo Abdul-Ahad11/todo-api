@@ -15,6 +15,7 @@ A simple RESTful Todo API built with **FastAPI**. This project demonstrates CRUD
 - ✅ Search tasks by title
 - ✅ View task statistics
 - ✅ Request validation using Pydantic
+- ✅ API key authentication on write endpoints
 - ✅ Automatic Swagger UI documentation
 
 ---
@@ -34,6 +35,7 @@ A simple RESTful Todo API built with **FastAPI**. This project demonstrates CRUD
 todo-api/
 │
 ├── main.py
+├── requirements.txt
 ├── README.md
 ├── .gitignore
 └── screenshots/
@@ -79,7 +81,22 @@ source .venv/bin/activate
 ## 5. Install dependencies
 
 ```bash
-pip install fastapi uvicorn pydantic
+pip install -r requirements.txt
+```
+
+---
+
+# 🔐 Configuration
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `TODO_API_KEY` | Yes, for writes | – | Shared secret expected in the `X-API-Key` header on `POST`, `PUT` and `DELETE`. If unset, write endpoints return `503`. |
+| `ENABLE_DOCS` | No | `true` | Set to `false` to disable `/docs`, `/redoc` and `/openapi.json` (recommended in production). |
+
+Never commit the API key — export it in your shell or keep it in an untracked `.env` file.
+
+```bash
+export TODO_API_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 ```
 
 ---
@@ -126,9 +143,9 @@ http://127.0.0.1:8000/redoc
 | GET | `/health` | Health check |
 | GET | `/tasks` | Get all tasks |
 | GET | `/tasks/{id}` | Get task by ID |
-| POST | `/tasks` | Create a new task |
-| PUT | `/tasks/{id}` | Update a task |
-| DELETE | `/tasks/{id}` | Delete a task |
+| POST | `/tasks` | Create a new task (API key required) |
+| PUT | `/tasks/{id}` | Update a task (API key required) |
+| DELETE | `/tasks/{id}` | Delete a task (API key required) |
 | GET | `/stats` | Get task statistics |
 
 ---
@@ -300,6 +317,7 @@ curl http://127.0.0.1:8000/tasks
 ```bash
 curl -X POST http://127.0.0.1:8000/tasks \
 -H "Content-Type: application/json" \
+-H "X-API-Key: $TODO_API_KEY" \
 -d '{"title":"Study FastAPI"}'
 ```
 
@@ -308,13 +326,15 @@ curl -X POST http://127.0.0.1:8000/tasks \
 ```bash
 curl -X PUT http://127.0.0.1:8000/tasks/1 \
 -H "Content-Type: application/json" \
+-H "X-API-Key: $TODO_API_KEY" \
 -d '{"title":"Study AI","done":true}'
 ```
 
 ### Delete a task
 
 ```bash
-curl -X DELETE http://127.0.0.1:8000/tasks/1
+curl -X DELETE http://127.0.0.1:8000/tasks/1 \
+-H "X-API-Key: $TODO_API_KEY"
 ```
 
 ---
@@ -342,7 +362,8 @@ Through this project, I learned:
 # 🚀 Future Improvements
 
 - Store data in SQLite or PostgreSQL instead of memory
-- Add user authentication
+- Add per-user authentication (OAuth2 / JWT) instead of a single shared API key
+- Add rate limiting
 - Implement pagination
 - Add sorting
 - Add unit tests

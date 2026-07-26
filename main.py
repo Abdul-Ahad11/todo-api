@@ -40,8 +40,25 @@ def health():
     return {'status':'ok'}
 
 @app.get('/tasks')
-def task():
-    return tasks
+def task(done: bool |None=None , search : str |None=None):
+    results=tasks
+    if done is not None:
+        filtered_tasks = []
+        for t in results:
+            if t["done"]==done:
+                filtered_tasks.append(t)
+        results=filtered_tasks
+
+    if search is not None:
+        searched_tasks=[]
+        for t in results:
+            if search.lower() in t["title"].lower():
+                searched_tasks.append(t)
+            results=searched_tasks
+    return results
+
+
+
 
 @app.get('/tasks/{id}')
 def task_byid(id:int):
@@ -87,3 +104,19 @@ def delete_task(id: int):
         detail="not found"
     )
 
+@app.get('/stats')
+def get_stats():
+    total=len(tasks)
+    done=0
+    open_task=0
+    for t in tasks:
+        if t["done"]:
+            done +=1
+        else:
+            open_task +=1
+
+    return {
+        "total": total ,
+        "done":done ,
+        "open_task":open_task
+    }

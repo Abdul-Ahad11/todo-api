@@ -205,6 +205,61 @@ Example Response
 
 ---
 
+# ⚠️ Error Responses
+
+All errors return a consistent JSON envelope and are logged server-side.
+
+Not found (404):
+
+```json
+{
+    "error": {
+        "status": 404,
+        "detail": "task 999 not found"
+    }
+}
+```
+
+Validation error (422) — invalid body or path parameter:
+
+```json
+{
+    "error": {
+        "status": 422,
+        "detail": "request validation failed",
+        "errors": [
+            {
+                "type": "string_too_short",
+                "loc": ["body", "title"],
+                "msg": "String should have at least 1 character"
+            }
+        ]
+    }
+}
+```
+
+Unexpected error (500) — internals are logged with a traceback, never leaked to clients:
+
+```json
+{
+    "error": {
+        "status": 500,
+        "detail": "internal server error"
+    }
+}
+```
+
+---
+
+# 🧪 Tests
+
+```bash
+pip install pytest httpx
+pytest
+```
+
+---
+
 # 📝 Request Examples
 
 ## Create Task

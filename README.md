@@ -1,20 +1,25 @@
 # 🚀 Todo API (FastAPI)
 
-A simple RESTful Todo API built with **FastAPI**. This project demonstrates the complete CRUD (Create, Read, Update, Delete) operations using an in-memory list and automatic API documentation with Swagger UI.
-
-## ✨ Features
-
-- Create a new task
-- Get all tasks
-- Get a task by ID
-- Update an existing task
-- Delete a task
-- Automatic Swagger UI documentation
-- Input validation using Pydantic
+A simple RESTful Todo API built with **FastAPI**. This project demonstrates CRUD (Create, Read, Update, Delete) operations using an in-memory list. It also includes filtering, searching, task statistics, request validation with Pydantic, and interactive API documentation using Swagger UI.
 
 ---
 
-## 🛠️ Technologies Used
+# ✨ Features
+
+- ✅ Create a new task
+- ✅ Get all tasks
+- ✅ Get a task by ID
+- ✅ Update a task
+- ✅ Delete a task
+- ✅ Filter tasks by completion status
+- ✅ Search tasks by title
+- ✅ View task statistics
+- ✅ Request validation using Pydantic
+- ✅ Automatic Swagger UI documentation
+
+---
+
+# 🛠️ Technologies Used
 
 - Python 3
 - FastAPI
@@ -23,54 +28,55 @@ A simple RESTful Todo API built with **FastAPI**. This project demonstrates the 
 
 ---
 
-## 📁 Project Structure
+# 📁 Project Structure
 
-```
+```text
 todo-api/
 │
 ├── main.py
-├── .gitignore
 ├── README.md
-└── Swagger UI screenshot/
+├── .gitignore
+└── screenshots/
+    └── swagger-ui.png
 ```
 
 ---
 
-## 📦 Installation
+# 📦 Installation
 
-### 1. Clone the repository
+## 1. Clone the repository
 
 ```bash
 git clone https://github.com/Abdul-Ahad11/todo-api.git
 ```
 
-### 2. Navigate to the project
+## 2. Navigate to the project
 
 ```bash
 cd todo-api
 ```
 
-### 3. Create a virtual environment
+## 3. Create a virtual environment
 
 ```bash
 python3 -m venv .venv
 ```
 
-### 4. Activate the virtual environment
+## 4. Activate the virtual environment
 
-**macOS/Linux**
+### macOS / Linux
 
 ```bash
 source .venv/bin/activate
 ```
 
-**Windows**
+### Windows
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### 5. Install dependencies
+## 5. Install dependencies
 
 ```bash
 pip install fastapi uvicorn pydantic
@@ -78,13 +84,15 @@ pip install fastapi uvicorn pydantic
 
 ---
 
-## ▶️ Run the API
+# ▶️ Run the Application
+
+Start the FastAPI server:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-The server will start at:
+The application will be available at:
 
 ```
 http://127.0.0.1:8000
@@ -92,15 +100,21 @@ http://127.0.0.1:8000
 
 ---
 
-## 📚 Swagger Documentation
+# 📚 API Documentation
 
-Open your browser and visit:
+FastAPI automatically generates interactive API documentation.
+
+### Swagger UI
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
-Swagger UI allows you to test every API endpoint directly from the browser.
+### ReDoc
+
+```
+http://127.0.0.1:8000/redoc
+```
 
 ---
 
@@ -115,6 +129,79 @@ Swagger UI allows you to test every API endpoint directly from the browser.
 | POST | `/tasks` | Create a new task |
 | PUT | `/tasks/{id}` | Update a task |
 | DELETE | `/tasks/{id}` | Delete a task |
+| GET | `/stats` | Get task statistics |
+
+---
+
+# 🔍 Filter Tasks
+
+Retrieve tasks based on their completion status.
+
+### Get completed tasks
+
+```http
+GET /tasks?done=true
+```
+
+### Get incomplete tasks
+
+```http
+GET /tasks?done=false
+```
+
+---
+
+# 🔎 Search Tasks
+
+Search tasks by title.
+
+Example:
+
+```http
+GET /tasks?search=python
+```
+
+Search is **case-insensitive**, so the following all work:
+
+```
+python
+Python
+PYTHON
+```
+
+---
+
+# 🔀 Combine Filtering and Search
+
+Both query parameters can be used together.
+
+Example:
+
+```http
+GET /tasks?done=true&search=git
+```
+
+This returns only completed tasks whose title contains **git**.
+
+---
+
+# 📊 Task Statistics
+
+Get a summary of your tasks.
+
+```http
+GET /stats
+```
+
+Example Response
+
+```json
+{
+    "total": 5,
+    "done": 2,
+    "open": 3
+}
+```
 
 ---
 
@@ -124,9 +211,11 @@ Swagger UI allows you to test every API endpoint directly from the browser.
 
 **POST** `/tasks`
 
+Request
+
 ```json
 {
-  "title": "Learn FastAPI"
+    "title": "Learn FastAPI"
 }
 ```
 
@@ -134,9 +223,9 @@ Response
 
 ```json
 {
-  "id": 4,
-  "title": "Learn FastAPI",
-  "done": false
+    "id": 4,
+    "title": "Learn FastAPI",
+    "done": false
 }
 ```
 
@@ -146,10 +235,22 @@ Response
 
 **PUT** `/tasks/1`
 
+Request
+
 ```json
 {
-  "title": "Learn AI",
-  "done": true
+    "title": "Learn AI",
+    "done": true
+}
+```
+
+Response
+
+```json
+{
+    "id": 1,
+    "title": "Learn AI",
+    "done": true
 }
 ```
 
@@ -159,7 +260,7 @@ Response
 
 **DELETE** `/tasks/1`
 
-Response Status:
+Response Status
 
 ```
 204 No Content
@@ -167,45 +268,85 @@ Response Status:
 
 ---
 
-# 📷 Swagger UI Screenshot
+# 📷 Swagger UI
 
-Add your Swagger UI screenshot here.
+Add a screenshot of your Swagger UI inside the **screenshots** folder.
 
-Example:
+Project structure:
 
+```text
+screenshots/
+    └── swagger-ui.png
 ```
-Swagger UI screenshot/
-    swagger.png
-```
 
-Then display it like this:
+Display it in the README:
 
 ```markdown
-![Swagger UI](Swagger%20UI%20screenshot/swagger.png)
+![Swagger UI](screenshots/swagger-ui.png)
 ```
 
 ---
 
-# 🧪 Example cURL Command
+# 🧪 Example cURL Commands
+
+### Get all tasks
 
 ```bash
-curl -X GET http://127.0.0.1:8000/tasks
+curl http://127.0.0.1:8000/tasks
+```
+
+### Create a task
+
+```bash
+curl -X POST http://127.0.0.1:8000/tasks \
+-H "Content-Type: application/json" \
+-d '{"title":"Study FastAPI"}'
+```
+
+### Update a task
+
+```bash
+curl -X PUT http://127.0.0.1:8000/tasks/1 \
+-H "Content-Type: application/json" \
+-d '{"title":"Study AI","done":true}'
+```
+
+### Delete a task
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/tasks/1
 ```
 
 ---
 
 # 📈 Learning Outcomes
 
-This project helped me learn:
+Through this project, I learned:
 
-- REST API fundamentals
-- FastAPI routing
-- Path parameters
-- Request body validation using Pydantic
+- FastAPI fundamentals
+- REST API development
 - CRUD operations
+- Path parameters
+- Query parameters
+- Request validation using Pydantic
 - HTTP status codes (200, 201, 204, 404)
-- Swagger UI documentation
+- Filtering API responses
+- Searching with query parameters
+- Generating task statistics
+- Swagger UI and ReDoc
 - Git and GitHub workflow
+- Writing project documentation
+
+---
+
+# 🚀 Future Improvements
+
+- Store data in SQLite or PostgreSQL instead of memory
+- Add user authentication
+- Implement pagination
+- Add sorting
+- Add unit tests
+- Deploy the API to the cloud
 
 ---
 
@@ -213,5 +354,8 @@ This project helped me learn:
 
 **Abdul Ahad**
 
-GitHub:
-https://github.com/Abdul-Ahad11
+GitHub: **https://github.com/Abdul-Ahad11**
+
+---
+
+## ⭐ If you found this project helpful, consider giving it a star on GitHub!

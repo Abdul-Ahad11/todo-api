@@ -1,7 +1,20 @@
+import sqlite3
 from fastapi import FastAPI , HTTPException
 from pydantic import BaseModel , Field
 
 app=FastAPI()
+
+connection = sqlite3.connect("tasks.db")
+cursor=connection.cursor()
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS tasks(
+id PRIMARY KEY, 
+title TEXT NOT NULL, 
+done BOOLEAN NOT NULL
+)
+"""  )
+
+connection.commit()
 tasks=[
     {
         "id":1,

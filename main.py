@@ -4,17 +4,29 @@ from pydantic import BaseModel , Field
 
 app=FastAPI()
 
-connection = sqlite3.connect("tasks.db")
+connection = sqlite3.connect("tasks.db" , check_same_thread=False)
 cursor=connection.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS tasks(
-id PRIMARY KEY, 
+id INTEGER PRIMARY KEY, 
 title TEXT NOT NULL, 
 done BOOLEAN NOT NULL
 )
 """  )
 
 connection.commit()
+cursor.execute("SELECT COUNT(*) FROM tasks")
+count=cursor.fetchone()[0]
+if count==0:
+    seed_task=[
+        ("learn fast api", False),
+        ("complete internship assignment", False),
+        ("push code to git hub", True)
+    ]
+    cursor.executemany(
+        "INSERT INTO tasks (title , done) VALUES (?,?)", seed_task
+    )
+    connection.commit()
 tasks=[
     {
         "id":1,
@@ -54,35 +66,48 @@ def health():
 
 @app.get('/tasks')
 def task(done: bool |None=None , search : str |None=None):
-    results=tasks
+    cursor.execute("SELECT * FROM tasks")
+    rows=cursor.fetchall()
+    result=[]
+    for row in rows:
+        result.append({
+            "id":row[0],
+            "title":row[1],
+            "done":bool(row[2])
+        })
     if done is not None:
         filtered_tasks = []
-        for t in results:
+        for t in result:
             if t["done"]==done:
                 filtered_tasks.append(t)
-        results=filtered_tasks
+        result=filtered_tasks
 
     if search is not None:
         searched_tasks=[]
-        for t in results:
+        for t in result:
             if search.lower() in t["title"].lower():
                 searched_tasks.append(t)
-            results=searched_tasks
-    return results
+        result=searched_tasks
+    return result
 
 
 
 
 @app.get('/tasks/{id}')
 def task_byid(id:int):
-    for t in tasks:
-        if t["id"] == id :
-            return t
+    cursor.execute("SELECT * FROM tasks WHERE id = ?" , (id,))
 
-    raise HTTPException(
-        status_code=404,
-        detail="task not found"
-    )
+    row = cursor.fetchone()
+    if row is None:
+        raise HTTPException(
+            status_code=404,
+            detail="task not found"
+        )
+    return {
+        "id": row[0],
+        "title": row[1],
+        "done": bool(row[2])
+    }
 @app.post('/tasks', status_code=201)
 def create_task(task : TaskCreate):
     new_id=len(tasks)+1

@@ -123,26 +123,36 @@ def create_task(task : TaskCreate):
 
 @app.put('/tasks/{id}')
 def update_tasks(id: int ,  update_task :UpdateTask):
-    for t in tasks:
-        if t["id"]==id:
-            t["title"] = update_task.title
-            t["done"] = update_task.done
-            return t
-    raise HTTPException(
+    cursor.execute("UPDATE tasks SET title=? , done=? WHERE id=?" ,
+                   (update_task.title , update_task.done , id))
+    connection.commit()
+
+    if cursor.rowcount==0:
+        raise HTTPException(
         status_code=404,
         detail="not found"
     )
+    return {
+        "id": id,
+        "title": update_task.title,
+        "done": update_task.done
+    }
+
 
 @app.delete("/tasks/{id}", status_code=204)
 def delete_task(id: int):
-    for t in tasks:
-        if t["id"]==id:
-            tasks.remove(t)
-            return None
-    raise HTTPException(
-        status_code=404,
-        detail="not found"
+    cursor.execute(
+        "DELETE FROM tasks WHERE id = ?",
+        (id,)
     )
+    connection.commit()
+    if cursor.rowcount == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
+        )
+    return None
+
 
 @app.get('/stats')
 def get_stats():

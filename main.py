@@ -1,3 +1,4 @@
+from datetime import datetime
 import sqlite3
 from fastapi import FastAPI , HTTPException
 from pydantic import BaseModel , Field
@@ -10,40 +11,27 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS tasks(
 id INTEGER PRIMARY KEY, 
 title TEXT NOT NULL, 
-done BOOLEAN NOT NULL
+done BOOLEAN NOT NULL, 
+created_at TEXT , 
+updated_at TEXT
 )
 """  )
 
 connection.commit()
+
 cursor.execute("SELECT COUNT(*) FROM tasks")
 count=cursor.fetchone()[0]
 if count==0:
+    now = datetime.now().isoformat()
     seed_task=[
-        ("learn fast api", False),
-        ("complete internship assignment", False),
-        ("push code to git hub", True)
+        ("learn fast api", False , now , now),
+        ("complete internship assignment", False , now , now),
+        ("push code to git hub", True , now, now)
     ]
     cursor.executemany(
-        "INSERT INTO tasks (title , done) VALUES (?,?)", seed_task
+        "INSERT INTO tasks (title , done ,created_at , updated_at) VALUES (?,?,?,?)", seed_task
     )
     connection.commit()
-tasks=[
-    {
-        "id":1,
-        "title":"learn fast api",
-        "done":False
-    },
-    {
-        "id":2,
-        "title":"complete internship assignment",
-        "done":False
-    },
-    {
-        "id":3,
-        "title":"push code to git hub",
-        "done":True
-    }
-]
 
 class TaskCreate(BaseModel):
     title:str = Field(...,min_length=1)
@@ -66,32 +54,31 @@ def health():
 
 @app.get('/tasks')
 def task(done: bool |None=None , search : str |None=None):
-    cursor.execute("SELECT * FROM tasks")
+    query="SELECT * FROM tasks WHERE 1=1"
+    params=[]
+
+    if done is not None:
+        query += " AND done=?"
+        params.append(done)
+
+    if search is not None:
+        query+=" AND title LIKE ?"
+        params.append(f"%{search}%")
+
+    query+=" ORDER BY title"
+
+    cursor.execute(query , params)
     rows=cursor.fetchall()
     result=[]
     for row in rows:
         result.append({
             "id":row[0],
             "title":row[1],
-            "done":bool(row[2])
+            "done":bool(row[2]),
+            "created_at":row[3],
+            "updated_at":row[4]
         })
-    if done is not None:
-        filtered_tasks = []
-        for t in result:
-            if t["done"]==done:
-                filtered_tasks.append(t)
-        result=filtered_tasks
-
-    if search is not None:
-        searched_tasks=[]
-        for t in result:
-            if search.lower() in t["title"].lower():
-                searched_tasks.append(t)
-        result=searched_tasks
     return result
-
-
-
 
 @app.get('/tasks/{id}')
 def task_byid(id:int):
@@ -106,11 +93,16 @@ def task_byid(id:int):
     return {
         "id": row[0],
         "title": row[1],
-        "done": bool(row[2])
+        "done": bool(row[2]),
+        "created_at": row[3],
+        "updated_at": row[4]
     }
 @app.post('/tasks', status_code=201)
 def create_task(task : TaskCreate):
-    cursor.execute("INSERT INTO tasks (title , done) VALUES (? , ?)" , (task.title , False) )
+
+    now=datetime.now().isoformat()
+    cursor.execute("INSERT INTO tasks (title , done , created_at , updated_at) VALUES (?,?,?,?)" ,
+                   (task.title , False ,now , now) )
 
     connection.commit()
     new_id =cursor.lastrowid
@@ -118,13 +110,18 @@ def create_task(task : TaskCreate):
     return {
         "id":new_id,
         "title":task.title,
-        "done":False
+        "done":False,
+        "created_at": now,
+        "updated_at": now
     }
 
 @app.put('/tasks/{id}')
 def update_tasks(id: int ,  update_task :UpdateTask):
-    cursor.execute("UPDATE tasks SET title=? , done=? WHERE id=?" ,
-                   (update_task.title , update_task.done , id))
+
+    now=datetime.now().isoformat()
+
+    cursor.execute("UPDATE tasks SET title=? , done=? , updated_at=?  WHERE id=?" ,
+                   (update_task.title , update_task.done ,now , id))
     connection.commit()
 
     if cursor.rowcount==0:
@@ -135,7 +132,8 @@ def update_tasks(id: int ,  update_task :UpdateTask):
     return {
         "id": id,
         "title": update_task.title,
-        "done": update_task.done
+        "done": update_task.done ,
+        "updated_at":now
     }
 
 
@@ -156,14 +154,14 @@ def delete_task(id: int):
 
 @app.get('/stats')
 def get_stats():
-    total=len(tasks)
-    done=0
-    open_task=0
-    for t in tasks:
-        if t["done"]:
-            done +=1
-        else:
-            open_task +=1
+    cursor.execute("SELECT COUNT(*) FROM tasks ")
+    total=cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE done=1")
+    done=cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE done=0")
+    open_task=cursor.fetchone()[0]
 
     return {
         "total": total ,

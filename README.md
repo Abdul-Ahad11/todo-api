@@ -223,13 +223,141 @@ Any task created, updated, or deleted through the API remains in `tasks.db` afte
 
 ---
 
-## 🚀 Future Improvements
+# AI vs Me (Stage 8 – SQLite API Comparison)
 
-- Migrate from SQLite to PostgreSQL for production use
-- Add user authentication
-- Implement pagination and sorting
-- Add automated unit tests
-- Deploy the API to the cloud
+## AI Prompt
+
+I asked an AI assistant to build the same SQLite-based Task Management API that I had already implemented manually.
+
+**Prompt:**
+
+```text
+Create a Task Management API using FastAPI and SQLite.
+
+Requirements:
+- Use Python, FastAPI, and the built-in sqlite3 library.
+- Create a SQLite database named tasks.db.
+- Create a tasks table if it does not exist with:
+  - id (INTEGER PRIMARY KEY)
+  - title (TEXT NOT NULL)
+  - done (BOOLEAN NOT NULL)
+- Seed exactly three sample tasks only if the table is empty.
+- Implement:
+  - GET /tasks
+  - GET /tasks/{id}
+  - POST /tasks
+  - PUT /tasks/{id}
+  - DELETE /tasks/{id}
+  - GET /health
+  - GET /stats
+- Return 404 when a task is not found.
+- Return 201 when creating a task.
+- Return 204 when deleting a task.
+- Use parameterized SQL queries (?) for all database operations.
+- Commit after every INSERT, UPDATE, and DELETE.
+- Return JSON responses.
+```
+
+---
+
+## Running the AI Version
+
+The AI-generated implementation was saved separately so that my own implementation remained unchanged.
+
+The application started successfully using:
+
+```bash
+uvicorn app:app --reload
+```
+
+I tested the generated API using the same endpoints that I used for my manual implementation.
+
+---
+
+## Test Results
+
+| Test | Expected | Result |
+|------|----------|--------|
+| POST /tasks | 201 Created | ✅ Passed |
+| GET /tasks | 200 OK | ✅ Passed |
+| GET /tasks/{id} | 200 / 404 | ✅ Passed |
+| PUT /tasks/{id} | 200 OK | ✅ Passed |
+| DELETE /tasks/{id} | 204 No Content | ✅ Passed |
+| GET /health | 200 OK | ✅ Passed |
+| GET /stats | Correct Response | ✅ Passed |
+
+The generated API started successfully on the first attempt and all required endpoints behaved correctly.
+
+---
+
+## What the AI Did Better
+
+After comparing the AI-generated implementation with my own code, I noticed several improvements:
+
+- Used `sqlite3.Row` with a helper function to simplify JSON responses.
+- Used FastAPI status constants (`status.HTTP_201_CREATED`, `status.HTTP_204_NO_CONTENT`) instead of hardcoded values.
+- Checked whether a task existed before updating or deleting it, making the logic easier to follow.
+- Organized the code into clear sections, improving readability and maintainability.
+- Produced concise and clean code while meeting all required functionality.
+
+---
+
+## What My Implementation Did Better
+
+My implementation included several additional features beyond the original prompt:
+
+- Added `created_at` and `updated_at` timestamps for every task.
+- Supported filtering by completion status and searching by title in `GET /tasks`.
+- Automatically updated the `updated_at` timestamp whenever a task was modified.
+- Included a root (`/`) endpoint that returns API information.
+- Used Pydantic `Field(min_length=1)` for basic request validation.
+
+---
+
+## What the AI Handled Differently
+
+Although the generated API worked correctly, I noticed a few implementation differences:
+
+- The AI stored only `id`, `title`, and `done`, while my implementation also stored timestamps.
+- My API supports filtering and searching; the AI version returns all tasks ordered by ID.
+- The AI used a helper function to convert database rows into dictionaries, while I manually built JSON responses.
+- The `/stats` response used different field names (`completed` and `pending`) instead of my `done` and `open_task`.
+
+These differences are implementation choices rather than bugs and show that AI makes reasonable assumptions when requirements are not fully specified.
+
+---
+
+## What My Prompt Forgot to Specify
+
+While reviewing the generated code, I realized that my prompt did not explicitly define:
+
+- Whether timestamps should be stored.
+- Whether filtering and searching should be supported.
+- The exact response format for the `/stats` endpoint.
+- Whether helper functions should be used for formatting responses.
+- Whether additional endpoints such as `/` should be included.
+
+Because these details were not specified, the AI made its own design decisions.
+
+---
+
+## Prompt Improvement (Second Attempt)
+
+For the second attempt, I improved my prompt by specifying:
+
+- The complete database schema, including timestamps.
+- Filtering and search requirements.
+- The exact `/stats` response format.
+- Automatic timestamp updates.
+- Additional endpoint and response requirements.
+
+The regenerated implementation matched my own solution much more closely.
+
+---
+
+## Reflection
+
+This exercise showed me that writing a clear specification is just as important as writing code. The AI quickly produced a functional SQLite-based REST API, but it still made several implementation decisions where my prompt was ambiguous. Since I had already built the project manually, I was able to compare both implementations, understand the AI's design choices, and identify where my own implementation provided additional functionality. This reinforced that AI is a valuable development assistant, but clear requirements and human review are still essential for producing the desired result.
 
 ---
 

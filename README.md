@@ -140,7 +140,7 @@ FastAPI automatically generates interactive documentation for every endpoint.
 ---
 ---
 
-# 📌 Assignment 2 — SQLite Database Integration
+# 📌 Assignment 2 — Connecting to the Database(SQLite Database Integration)
 
 ## Overview
 
@@ -360,6 +360,16 @@ The regenerated implementation matched my own solution much more closely.
 This exercise showed me that writing a clear specification is just as important as writing code. The AI quickly produced a functional SQLite-based REST API, but it still made several implementation decisions where my prompt was ambiguous. Since I had already built the project manually, I was able to compare both implementations, understand the AI's design choices, and identify where my own implementation provided additional functionality. This reinforced that AI is a valuable development assistant, but clear requirements and human review are still essential for producing the desired result.
 
 ---
+# 📌 Assignment 3 (A3) _ Containerize your stack (PostGreSQL)
+## Stage 0 – Database Fundamentals (Docker Setup)
+
+- Docker fundamentals and containerized PostgreSQL deployment.
+- Docker networking, port mapping, and persistent storage using volumes.
+- PostgreSQL server setup and database connectivity via `psql`.
+- Relational database concepts: DBMS, databases, tables, rows, and columns.
+- Database schema design using data types and constraints.
+- SQL fundamentals: table creation and CRUD (Create, Read, Update, Delete) operations.
+- Basic Docker workflow for managing a PostgreSQL database environment.
 
 ## 👨‍💻 Author
 

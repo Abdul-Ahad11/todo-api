@@ -361,7 +361,7 @@ This exercise showed me that writing a clear specification is just as important 
 
 ---
 # 📌 Assignment 3 (A3) _ Containerize your stack (PostGreSQL)
-## Stage 0 – Database Fundamentals (Docker Setup)
+## Stage 0 – Database Fundamentals ( Install Docker Desktop)
 
 - Docker fundamentals and containerized PostgreSQL deployment.
 - Docker networking, port mapping, and persistent storage using volumes.

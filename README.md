@@ -479,7 +479,7 @@ screenshots/database.png
 Then display it in the README:
 
 ```markdown
-![Database Screenshot](screenshots/database.png)
+![Database Screenshot](screenshots/Database.png)
 ```
 
 ---

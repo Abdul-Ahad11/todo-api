@@ -360,17 +360,168 @@ The regenerated implementation matched my own solution much more closely.
 This exercise showed me that writing a clear specification is just as important as writing code. The AI quickly produced a functional SQLite-based REST API, but it still made several implementation decisions where my prompt was ambiguous. Since I had already built the project manually, I was able to compare both implementations, understand the AI's design choices, and identify where my own implementation provided additional functionality. This reinforced that AI is a valuable development assistant, but clear requirements and human review are still essential for producing the desired result.
 
 ---
-# 📌 Assignment 3 (A3) _ Containerize your stack (PostGreSQL)
-## Stage 0 – Database Fundamentals ( Install Docker Desktop)
+# 📌 Assignment 3 (A3) # Containerize your stack
+Todo API – FastAPI + PostgreSQL + Docker
 
-- Docker fundamentals and containerized PostgreSQL deployment.
-- Docker networking, port mapping, and persistent storage using volumes.
-- PostgreSQL server setup and database connectivity via `psql`.
-- Relational database concepts: DBMS, databases, tables, rows, and columns.
-- Database schema design using data types and constraints.
-- SQL fundamentals: table creation and CRUD (Create, Read, Update, Delete) operations.
-- Basic Docker workflow for managing a PostgreSQL database environment.
+A RESTful Todo API built with FastAPI and PostgreSQL. The application is containerized with Docker Compose, allowing the API and database to start together with a single command.
 
+## Features
+
+- Create, read, update, and delete tasks
+- PostgreSQL database
+- Docker Compose setup
+- Filter tasks by status
+- Search tasks by title
+- Task statistics
+- Interactive API documentation (Swagger)
+
+---
+
+## Requirements
+
+- Docker
+- Docker Compose
+
+---
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd todo-api
+```
+
+### 2. Create the environment file
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+The required environment variables are provided in `.env.example`.
+
+### 3. Start the application
+
+Run the following command:
+
+```bash
+docker compose up
+```
+
+The application will be available at:
+
+- API: http://localhost:8000
+- Swagger UI: http://localhost:8000/docs
+
+---
+
+## Environment Variables
+
+Example `.env.example`:
+
+```env
+POSTGRES_DB=taskdb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres123
+DATABASE_URL=postgresql://postgres:postgres123@db:5432/taskdb
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| GET | `/tasks` | Get all tasks |
+| GET | `/tasks/{id}` | Get a task by ID |
+| POST | `/tasks` | Create a new task |
+| PUT | `/tasks/{id}` | Update a task |
+| DELETE | `/tasks/{id}` | Delete a task |
+| GET | `/stats` | Get task statistics |
+
+---
+
+## Example Request
+
+Create a task:
+
+```bash
+curl -i -X POST http://localhost:8000/tasks \
+-H "Content-Type: application/json" \
+-d '{"title":"Learn Docker"}'
+```
+
+Expected response:
+
+```http
+HTTP/1.1 201 Created
+```
+
+---
+
+## Database Screenshot
+
+Add a screenshot showing:
+
+- The `tasks` table
+- The stored task records
+
+Save the image in:
+
+```
+screenshots/database.png
+```
+
+Then display it in the README:
+
+```markdown
+![Database Screenshot](screenshots/database.png)
+```
+
+---
+
+## Project Structure
+
+```
+todo-api/
+├── main.py
+├── repository.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirnments.txt
+├── .env.example
+├── README.md
+└── screenshots/
+```
+
+---
+
+## Technologies Used
+
+- Python
+- FastAPI
+- PostgreSQL
+- Psycopg
+- Docker
+- Docker Compose
+- Pydantic
+
+---
+
+## Run the Project
+
+After cloning the repository:
+
+```bash
+cp .env.example .env
+docker compose up
+```
+
+The API and PostgreSQL database will start automatically with no manual database setup.
 ## 👨‍💻 Author
 
 **Abdul Ahad**

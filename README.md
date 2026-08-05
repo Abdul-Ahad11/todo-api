@@ -478,9 +478,9 @@ screenshots/database.png
 
 Then display it in the README:
 
-```markdown
-![Database Screenshot](screenshots/Database.png)
-```
+
+![Database Screenshot](screenshots/database_task.png)
+
 
 ---
 

@@ -522,6 +522,116 @@ docker compose up
 ```
 
 The API and PostgreSQL database will start automatically with no manual database setup.
+
+# AI vs Me  (Stage 5)
+
+## Overview
+
+In this stage, I compared my manually built containerized **FastAPI + PostgreSQL Todo API** with an AI-generated version.
+
+The purpose was not to replace my implementation, but to review how AI approaches the same problem and identify differences in design, security, and deployment practices.
+
+---
+
+# My Original Prompt
+
+Create a FastAPI Todo API using PostgreSQL.
+
+Requirements:
+
+- Use FastAPI for API routes.
+- Keep `main.py` only for routing.
+- Use `repository.py` for all PostgreSQL SQL queries.
+- Use Psycopg as the PostgreSQL driver.
+- Connect to PostgreSQL using `DATABASE_URL` from `.env`.
+- Never hardcode database credentials.
+- Create a tasks table with:
+  - id
+  - title
+  - done
+  - created_at
+  - updated_at
+- Seed initial tasks only when the database is empty.
+- Use parameterized SQL queries.
+- Implement CRUD endpoints:
+  - Create task
+  - Get tasks
+  - Update task
+  - Delete task
+  - Task statistics
+- Use Docker Compose with:
+  - FastAPI container
+  - PostgreSQL 17 container
+  - Persistent volume
+- Start the complete application using one command:
+
+```bash
+docker compose up --build
+```
+
+---
+
+# Comparison
+
+## What AI Did Better
+
+- Suggested cleaner separation between API routes and database logic.
+- Identified missing production considerations such as health checks and database startup handling.
+- Provided structured explanations of Docker networking, volumes, and environment variables.
+
+---
+
+## What AI Got Wrong or Missed
+
+- Some generated code required adjustments to match my exact project structure.
+- Initial versions needed verification because generated code was not tested against my Docker environment.
+- Some production improvements, such as PostgreSQL health checks and retry handling, were not included automatically.
+
+---
+
+# What My Prompt Forgot to Specify
+
+The original prompt did not include:
+
+- Database health checks in Docker Compose.
+- Retry logic when the API starts before PostgreSQL is ready.
+- Additional production settings like logging and automated tests.
+
+---
+
+# One Rematch
+
+## Improved Prompt
+
+I improved my prompt by adding more details about:
+
+- Docker health checks.
+- PostgreSQL startup dependency handling.
+- Production-ready container configuration.
+- Exact expected project structure.
+
+---
+
+## What Changed
+
+The improved version produced a more reliable setup with better Docker behavior and fewer manual fixes required.
+
+---
+
+# Lesson Learned
+
+AI can generate code quickly, but the quality depends on how clearly the requirements are specified.
+
+Because I built the project manually first, I was able to review AI output, identify mistakes, and understand the differences instead of blindly accepting generated code.
+
+---
+
+# Final Reflection
+
+This comparison showed that AI is a useful development assistant, but understanding the system architecture is still important.
+
+Building the project manually helped me evaluate AI suggestions, fix incorrect assumptions, and make better technical decisions.
+```
 ## 👨‍💻 Author
 
 **Abdul Ahad**
